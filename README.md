@@ -80,31 +80,35 @@ agent called it), and the agent's text response:
   "status": 200,
   "session_id": "session-id-returned-by-the-server",
   "response": {
-    "pokemon_card": {
-      "image": "https://...",
-      "pokemon_name": "Pikachu",
-      "japanese_name": "ピカチュウ",
-      "genera": "Mouse Pokémon",
-      "evolution_chain": "Pichu → Pikachu → Raichu",
-      "audio_cries": "https://...",
-      "stats": {
-        "hp": 35,
-        "height": 0.4,
-        "weight": 6.0,
-        "attack": 55,
-        "defense": 40,
-        "special_attack": 50,
-        "special_defense": 50,
-        "speed": 90
+    "pokemon_card": [
+      {
+        "image": "https://...",
+        "pokemon_name": "Pikachu",
+        "japanese_name": "ピカチュウ",
+        "genera": "Mouse Pokémon",
+        "evolution_chain": "Pichu → Pikachu → Raichu",
+        "audio_cries": "https://...",
+        "stats": {
+          "hp": 35,
+          "height": 0.4,
+          "weight": 6.0,
+          "attack": 55,
+          "defense": 40,
+          "special_attack": 50,
+          "special_defense": 50,
+          "speed": 90
+        }
       }
-    },
+    ],
     "response_text": "Pikachu is an Electric-type Pokémon..."
   }
 }
 ```
 
-Values and the agent's wording depend on the request. When the agent does not call
-the Pokémon tool, `pokemon_card` may be `null`.
+`pokemon_card` is an array: a single Pokémon is returned at index `0`, and multiple
+Pokémon are returned at indexes `0`, `1`, and so on. Values and the agent's wording
+depend on the request. When the agent does not call the Pokémon tool, `pokemon_card`
+may be `null`.
 
 ### Reuse a conversation session
 

@@ -7,7 +7,7 @@ from typing import Dict, Any
 POKEAPI_BASE = "https://pokeapi.co/api/v2"
 
 
-def get_multiple_pokemon_data(names: list[str]) -> Dict[str, Any]:
+def get_multiple_pokemon_data(names: list[str]) -> list[Dict[str, Any]]:
     """Get multiple Pokémon's details by their names.
     This function is used by the Pokedex Agent to provide information about multiple Pokémon species.
     Include this function whenever if user asks for multiple Pokémon species information or their comparison.
@@ -19,18 +19,20 @@ def get_multiple_pokemon_data(names: list[str]) -> Dict[str, Any]:
         names: A list of Pokémon names, such as ["pikachu", "charizard"].
     """
     if not names:
-        return {}
+        return []
 
     def fetch_details(name: str) -> Dict[str, Any]:
         try:
-            return get_pokemon_details(name)
+            name_clean = name.strip().lower()
+            return deepcopy(_get_pokemon_details_cached(name_clean))
         except requests.exceptions.RequestException as e:
             return {"error": str(e)}
 
     with ThreadPoolExecutor(max_workers=min(len(names), 5)) as executor:
-        return dict(zip(names, executor.map(fetch_details, names)))
+        return list(executor.map(fetch_details, names))
 
-def get_pokemon_details(name: str) -> Dict[str, Any]:
+
+def get_pokemon_details(name: str) -> list[Dict[str, Any]]:
     """Get a Pokémon's image, Japanese name, species category, evolution chain, cry, and stats. Use this function tool is used by the Pokedex Agent to provide information about Pokémon species. Strictly bounded for Pokémon species information.
 
     Args:
@@ -38,7 +40,7 @@ def get_pokemon_details(name: str) -> Dict[str, Any]:
     """
 
     name_clean = name.strip().lower()
-    return deepcopy(_get_pokemon_details_cached(name_clean))
+    return [deepcopy(_get_pokemon_details_cached(name_clean))]
 
 
 @lru_cache(maxsize=512)
