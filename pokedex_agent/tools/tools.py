@@ -1,7 +1,34 @@
+from concurrent.futures import ThreadPoolExecutor
+from copy import deepcopy
+from functools import lru_cache
 import requests
 from typing import Dict, Any
 
 POKEAPI_BASE = "https://pokeapi.co/api/v2"
+
+
+def get_multiple_pokemon_data(names: list[str]) -> Dict[str, Any]:
+    """Get multiple Pokémon's details by their names.
+    This function is used by the Pokedex Agent to provide information about multiple Pokémon species.
+    Include this function whenever if user asks for multiple Pokémon species information or their comparison.
+    Strictly bounded for Pokémon species information.
+    Return a list of Pokémon details for each name provided.
+    If request is too generic like eg, give details of water pokemon, inform user to provide specific pokemon names.
+
+    Args:
+        names: A list of Pokémon names, such as ["pikachu", "charizard"].
+    """
+    if not names:
+        return {}
+
+    def fetch_details(name: str) -> Dict[str, Any]:
+        try:
+            return get_pokemon_details(name)
+        except requests.exceptions.RequestException as e:
+            return {"error": str(e)}
+
+    with ThreadPoolExecutor(max_workers=min(len(names), 5)) as executor:
+        return dict(zip(names, executor.map(fetch_details, names)))
 
 def get_pokemon_details(name: str) -> Dict[str, Any]:
     """Get a Pokémon's image, Japanese name, species category, evolution chain, cry, and stats. Use this function tool is used by the Pokedex Agent to provide information about Pokémon species. Strictly bounded for Pokémon species information.
@@ -11,7 +38,11 @@ def get_pokemon_details(name: str) -> Dict[str, Any]:
     """
 
     name_clean = name.strip().lower()
+    return deepcopy(_get_pokemon_details_cached(name_clean))
 
+
+@lru_cache(maxsize=512)
+def _get_pokemon_details_cached(name_clean: str) -> Dict[str, Any]:
     pokemon_response = requests.get(
         f"{POKEAPI_BASE}/pokemon/{name_clean}", timeout=15
     )
@@ -71,4 +102,3 @@ def get_pokemon_details(name: str) -> Dict[str, Any]:
             "speed": stats["speed"],
         },
     }
-

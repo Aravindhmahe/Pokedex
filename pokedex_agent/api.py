@@ -3,6 +3,7 @@ from google.genai import types
 from pokedex_agent import agent
 from google.adk.runners import Runner
 from fastapi import FastAPI, Header, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from google.adk.sessions import InMemorySessionService
 
 app = FastAPI(
@@ -10,6 +11,14 @@ app = FastAPI(
     description="An API for interacting with the Pokedex Agent.",
     version="1.0.0"
 );
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 APP_NAME = "pokedex_agent"
 USER_ID = "user"
@@ -54,7 +63,7 @@ async def chat_with_pokedex(
         parts=[types.Part(text=query_text)],
     )
 
-    response_text = ""
+    description = ""
     pokemon_card_data = None  # To hold the structured tool response
 
     async for event in runner.run_async(
@@ -69,7 +78,7 @@ async def chat_with_pokedex(
                     pokemon_card_data = part.function_response.response
 
         if event.is_final_response() and event.content:
-            response_text = "\n".join(
+            description = "\n".join(
                 part.text for part in event.content.parts if part.text
             )
 
@@ -78,6 +87,6 @@ async def chat_with_pokedex(
         "session_id": session_id,
         "response": {
             "pokemon_card": pokemon_card_data,
-            "response_text": response_text,
+            "description": description,
         },
     }

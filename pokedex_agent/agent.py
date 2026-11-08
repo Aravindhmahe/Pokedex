@@ -1,5 +1,5 @@
 from google.adk.agents import Agent
-from pokedex_agent.tools.tools import get_pokemon_details
+from pokedex_agent.tools.tools import get_multiple_pokemon_data, get_pokemon_details
 
 SYSTEM_INSTRUCTION = (
     "You are a helpful Pokédex-style assistant. Provide accurate information about "
@@ -15,5 +15,5 @@ root_agent = Agent(
     model="gemini-3.8-flash",
     description="An agent that provides information about Pokémon.",
     instruction=SYSTEM_INSTRUCTION,
-    tools=[get_pokemon_details]
+    tools=[get_pokemon_details, get_multiple_pokemon_data]
 )

@@ -137,3 +137,7 @@ pokedex_agent/
 Pokémon data is retrieved from the public [PokeAPI](https://pokeapi.co/). The API
 requests Pokémon, species, and evolution-chain data. Gemini generates the agent's
 text response and can decide when to call the registered tool.
+
+Successful Pokémon detail lookups are cached in memory (up to 512 Pokémon) until
+the server restarts, so repeat lookups avoid waiting for PokeAPI. Requests for
+multiple Pokémon are fetched concurrently.
