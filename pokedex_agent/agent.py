@@ -12,7 +12,7 @@ SYSTEM_INSTRUCTION = (
 
 root_agent = Agent(
     name="pokedex_agent",
-    model="gemini-3.8-flash",
+    model="gemini-3.5-flash-lite",
     description="An agent that provides information about Pokémon.",
     instruction=SYSTEM_INSTRUCTION,
     tools=[get_pokemon_details, get_multiple_pokemon_data]
