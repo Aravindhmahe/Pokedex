@@ -2,3 +2,5 @@
 
 pokedex_agent/__pycache__/
 pokedex_agent/.adk
+
+pokedex_agent/tools/__pycache__/
